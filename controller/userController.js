@@ -7,9 +7,6 @@ exports.getAllUsers = (req, res) =>
     res.send("Get all users");
 }
 
-
 router.get("/", exports.getAllUsers);
-
-
 
 module.exports = router;
