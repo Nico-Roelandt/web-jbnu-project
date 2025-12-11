@@ -1,5 +1,3 @@
-const express = require("express");
-const router = express.Router();
 const pool = require("../db");
 
 /**
@@ -117,12 +115,3 @@ exports.login = (req, res) => {
 exports.logout = (req, res) => {
     // TO DO
 }
-
-router.get("/:id", exports.getUser);
-router.patch("/:id", exports.updateUserStats);
-router.post("/", exports.createUser);
-router.delete("/:id", exports.deleteUser);
-router.post("/login", exports.login);
-router.post("/logout", exports.logout);
-
-module.exports = router;

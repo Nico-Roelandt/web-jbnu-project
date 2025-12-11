@@ -1,5 +1,3 @@
-const express = require("express");
-const router = express.Router();
 const pool = require("../db");
 
 ////////////////////////////////// USERS //////////////////////////////////
@@ -19,8 +17,6 @@ exports.getAllUsers = (req, res) => {
         res.json(results);
     });
 };
-
-router.get("/users", exports.getAllUsers);
 
 ////////////////////////////////// WORDS //////////////////////////////////
 
@@ -74,10 +70,6 @@ exports.deleteWord = (req, res) => {
     });
 };
 
-router.post("/words", exports.createWord);
-router.put("/words/:id", exports.updateWord);
-router.delete("/words/:id", exports.deleteWord);
-
 ////////////////////////////////// GAMES //////////////////////////////////
 
 /**
@@ -94,8 +86,6 @@ exports.deleteGame = (req, res) => {
         res.status(204).send();
     });
 };
-
-router.delete("/games/:id", exports.deleteGame);
 
 ////////////////////////////////// DIFFICULTIES //////////////////////////////////
 
@@ -149,10 +139,6 @@ exports.deleteDifficulty = (req, res) => {
     });
 };
 
-router.post("/difficulties", exports.createDifficulty);
-router.put("/difficulties/:id", exports.updateDifficulty);
-router.delete("/difficulties/:id", exports.deleteDifficulty);
-
 ////////////////////////////////// MODES //////////////////////////////////
 
 /**
@@ -204,9 +190,3 @@ exports.deleteMode = (req, res) => {
         res.status(204).send();
     });
 };
-
-router.post("/modes", exports.createMode);
-router.put("/modes/:id", exports.updateMode);
-router.delete("/modes/:id", exports.deleteMode);
-
-module.exports = router;

@@ -1,5 +1,3 @@
-const express = require("express");
-const router = express.Router();
 const pool = require("../db");
 
 /**
@@ -106,12 +104,3 @@ exports.getGamesTop3 = (req, res) => {
         res.json(results);
     });
 };
-
-
-router.get("/victories", exports.getVictoriesRanking);
-router.get("/victories/top3", exports.getVictoriesTop3);
-router.get("/attempts", exports.getAttemptsRanking);
-router.get("/attempts/top3", exports.getAttemptsTop3);
-router.get("/games", exports.getGamesRanking);
-router.get("/games/top3", exports.getGamesTop3);
-module.exports = router;
