@@ -1,4 +1,5 @@
 const pool = require("../db");
+const bcrypt = require('bcryptjs');
 
 /**
  * Get user by ID
@@ -13,6 +14,25 @@ exports.getUser = (req, res) => {
     pool.query(sql, [req.params.id], (err, results) => {
         if (err) return res.status(500).json({ error: err });
 
+        res.json(results);
+    });
+};
+
+/**
+ * Get all users with pagination & search
+ */
+exports.getUsers = (req, res) => {
+    let { page = 1, size = 10, keyword = '' } = req.query;
+    page = parseInt(page); size = parseInt(size);
+    const offset = (page - 1) * size;
+
+    const sql = `
+        SELECT * FROM user 
+        WHERE username LIKE ? 
+        LIMIT ? OFFSET ?
+    `;
+    pool.query(sql, [`%${keyword}%`, size, offset], (err, results) => {
+        if (err) return res.status(500).json({ error: err });
         res.json(results);
     });
 };
@@ -73,18 +93,44 @@ exports.updateUserStats = async (req, res) => {
  * Create a new user
  */
 exports.createUser = (req, res) => {
-    const sql = `
-        INSERT INTO user (username, password) VALUES (?, ?);
-    `;
+  const REQUIRED_FIELDS = ["is_admin", "username", "password"];
 
-    pool.query(sql, [req.body.username, req.body.password], (err, results) => {
-        if (err) return res.status(500).json({ error: err });
+  const missingFields = REQUIRED_FIELDS.filter(
+    field =>
+      req.body[field] === undefined ||
+      req.body[field] === null ||
+      req.body[field] === ""
+  );
 
-        res.status(201).json({
-            message: "User created",
-            id: results.insertId
-        });
+  if (missingFields.length > 0) {
+    return res.status(400).json({
+      code: "VALIDATION_ERROR",
+      message: "Missing required fields",
+      missingFields
     });
+  }
+
+  const { is_admin, username, password } = req.body;
+  const hashedPassword = bcrypt.hashSync(password, 10);
+
+  const sql = `
+    INSERT INTO user (is_admin, username, password)
+    VALUES (?, ?, ?)
+  `;
+
+  pool.query(sql, [is_admin, username, hashedPassword], (err, results) => {
+    if (err) {
+      return res.status(500).json({
+        code: "DATABASE_ERROR",
+        message: err.message
+      });
+    }
+
+    res.status(201).json({
+      message: "User created",
+      id: results.insertId
+    });
+  });
 };
 
 /**
@@ -101,17 +147,3 @@ exports.deleteUser = (req, res) => {
         res.status(204).send();
     });
 };
-
-/**
- * Login
- */
-exports.login = (req, res) => {
-    // TO DO
-}
-
-/**
- * Logout
- */
-exports.logout = (req, res) => {
-    // TO DO
-}
