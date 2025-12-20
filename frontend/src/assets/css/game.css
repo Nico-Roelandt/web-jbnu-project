@@ -1,0 +1,32 @@
+.mode-selector {
+  display: flex;
+  gap: 16px;
+  justify-content: center;
+  margin-bottom: 24px;
+}
+
+.mode-button {
+  position: relative;
+  padding: 14px 28px;
+  border-radius: 12px;
+  background: linear-gradient(180deg, #3949d8, #2a35a8);
+  color: white;
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow: 0 4px 0 #1e267a;
+  transition: all 0.2s ease;
+}
+
+.mode-button:hover {
+  transform: translateY(-1px);
+}
+
+.mode-button input {
+  display: none;
+}
+
+.mode-button.selected {
+  background: #ffd43b;
+  color: #2b2b2b;
+  box-shadow: 0 6px 0 #d4b100;
+}

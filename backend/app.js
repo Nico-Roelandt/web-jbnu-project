@@ -1,6 +1,7 @@
 // app.js
 require("dotenv").config();
 const express = require("express");
+const cors = require("cors");
 
 const userRoutes = require("./routes/userRoutes");
 const wordRoutes = require("./routes/wordRoutes");
@@ -18,6 +19,13 @@ const app = express();
 const { swaggerUi, swaggerSpec } = require('./swagger');
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
+// CORS configuration
+app.use(cors({
+  origin: "http://localhost:5173",
+  methods: ["GET", "POST", "PUT", "PATCH", "DELETE"],
+  credentials: true
+}));
+
 // Middlewares
 app.use(express.json());
 
@@ -27,7 +35,7 @@ app.use("/words", wordRoutes);
 app.use("/modes", modeRoutes);
 app.use("/games", gameRoutes);
 app.use("/difficulties", difficultyRoutes);
-app.use("/ranking", rankingRoutes);
+app.use("/rankings", rankingRoutes);
 app.use("/admin", adminRoutes);
 app.use("/", authRoutes);
 

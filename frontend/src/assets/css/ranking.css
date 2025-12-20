@@ -1,0 +1,33 @@
+.ranking-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 12px;
+  border-radius: 10px;
+  transition: background 0.2s ease;
+}
+
+.ranking-row:hover {
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.rank {
+  width: 40px;
+  text-align: center;
+}
+
+.username {
+  flex: 1;
+}
+
+.value {
+  font-weight: 600;
+}
+
+.current-user {
+  color: #facc15;
+}
+
+.rank span {
+  font-size: 1.2rem;
+}

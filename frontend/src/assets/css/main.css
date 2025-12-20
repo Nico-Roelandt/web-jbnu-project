@@ -1,0 +1,196 @@
+/* =====================
+   GLOBAL
+===================== */
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  font-family: "Poppins", sans-serif;
+}
+
+body {
+  background: radial-gradient(circle at top, #1e2a78, #0b1026);
+  color: #ffffff;
+}
+
+a {
+  text-decoration: none;
+  color: inherit;
+}
+
+/* =====================
+   NAVBAR
+===================== */
+
+.navbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 18px 32px;
+  background: linear-gradient(180deg, #2f3dbf, #1b245f);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
+}
+
+.logo {
+  font-size: 22px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  color: #facc15;
+}
+
+.nav-links a {
+  margin-left: 18px;
+  font-weight: 600;
+  opacity: 0.85;
+}
+
+.nav-links a:hover {
+  opacity: 1;
+}
+
+/* =====================
+   PAGES
+===================== */
+
+.page {
+  padding: 48px 20px;
+  max-width: 900px;
+  margin: auto;
+  min-height: 95vh;
+}
+
+.center {
+  text-align: center;
+}
+
+.page-title {
+  font-size: 28px;
+  margin-bottom: 24px;
+}
+
+/* =====================
+   BUTTONS
+===================== */
+
+.button-group {
+  margin-top: 32px;
+  display: flex;
+  gap: 16px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.btn {
+  padding: 12px 22px;
+  border-radius: 12px;
+  border: none;
+  cursor: pointer;
+  font-weight: 600;
+  background: linear-gradient(180deg, #5f6cff, #3c47d6);
+  color: white;
+  box-shadow: 0 6px 0 #2831a5;
+  transition: transform 0.1s ease, box-shadow 0.1s ease;
+}
+
+.btn:hover {
+  transform: translateY(-2px);
+}
+
+.btn:active {
+  transform: translateY(2px);
+  box-shadow: 0 3px 0 #2831a5;
+}
+
+/* =====================
+   INFO TEXT
+===================== */
+
+.info-text {
+  max-width: 600px;
+  margin: 24px auto;
+  opacity: 0.85;
+}
+
+/* =====================
+   TABS (RANKING)
+===================== */
+
+.tabs {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 32px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.tab-button {
+  padding: 12px 20px;
+  border-radius: 14px;
+  border: none;
+  background: linear-gradient(180deg, #3949d8, #2a35a8);
+  color: white;
+  font-weight: 600;
+  cursor: pointer;
+  opacity: 0.7;
+  box-shadow: 0 4px 0 #1e267a;
+}
+
+.tab-button.active {
+  opacity: 1;
+  background: linear-gradient(180deg, #ffd76e, #f0b429);
+  color: #2c1d00;
+  box-shadow: 0 4px 0 #c28d1f;
+}
+
+/* =====================
+   CARDS
+===================== */
+
+.card,
+.ranking-block {
+  background: linear-gradient(180deg, #2c3a9e, #1a225f);
+  border-radius: 20px;
+  padding: 24px;
+  margin-bottom: 24px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+}
+
+.ranking-block h3 {
+  margin-bottom: 16px;
+  text-align: center;
+  font-size: 20px;
+}
+
+/* =====================
+   LISTS
+===================== */
+
+.ranking-block ul,
+.card ul {
+  list-style: none;
+}
+
+.ranking-block li,
+.card li {
+  display: flex;
+  justify-content: space-between;
+  padding: 10px 0;
+  font-weight: 600;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.ranking-block li:last-child,
+.card li:last-child {
+  border-bottom: none;
+}
+
+/* =====================
+   IMAGES
+===================== */
+
+.wordle-image {
+  max-width: 320px;
+  margin: 24px auto;
+  display: block;
+}

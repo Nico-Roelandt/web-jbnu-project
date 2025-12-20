@@ -1,9 +1,10 @@
 <template>
-  <div>
-    <h1>Admin Page</h1>
-
+  <div class="page center">
+    <h2>Admin Panel</h2>
+    <p>Site data administration (content coming soon).</p>
   </div>
 </template>
+
 
 <script setup>
 </script>

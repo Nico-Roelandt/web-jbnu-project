@@ -147,3 +147,49 @@ exports.deleteUser = (req, res) => {
         res.status(204).send();
     });
 };
+
+/**
+ * Get user rankings (victories, attempts, games)
+ */
+exports.getUserRankings = (req, res) => {
+    const userId = Number(req.params.id);
+
+    const victoriesSql = `
+        SELECT id
+        FROM user
+        ORDER BY nb_victories DESC
+    `;
+
+    const attemptsSql = `
+        SELECT id
+        FROM user
+        ORDER BY avg_attempts ASC
+    `;
+
+    const gamesSql = `
+        SELECT id
+        FROM user
+        ORDER BY nb_games DESC
+    `;
+
+    pool.query(victoriesSql, (err, victories) => {
+        if (err) return res.status(500).json({ error: err });
+
+        pool.query(attemptsSql, (err, attempts) => {
+            if (err) return res.status(500).json({ error: err });
+
+            pool.query(gamesSql, (err, games) => {
+                if (err) return res.status(500).json({ error: err });
+
+                const getRank = (list) =>
+                    list.findIndex(u => u.id === userId) + 1;
+
+                res.json({
+                    victories: getRank(victories),
+                    attempts: getRank(attempts),
+                    games: getRank(games)
+                });
+            });
+        });
+    });
+};
