@@ -2,7 +2,7 @@
 
 <template>
   <div class="page">
-    <h2 class="page-title">Ranking</h2>
+    <h2 class="page-title">Rankings</h2>
 
     <div class="tabs">
       <button

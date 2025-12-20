@@ -10,7 +10,7 @@
         <form @submit.prevent="handleLogin">
           <div class="field">
             <label>Username</label>
-            <input v-model="login.username" placeholder="Username" />
+            <input v-model="login.username" placeholder="Enter your username" />
           </div>
 
           <div class="field">
@@ -18,7 +18,7 @@
             <input
               v-model="login.password"
               type="password"
-              placeholder="Password"
+              placeholder="Enter your password"
             />
           </div>
 
@@ -33,7 +33,7 @@
         <form @submit.prevent="handleRegister">
           <div class="field">
             <label>Username</label>
-            <input v-model="register.username" placeholder="Username" />
+            <input v-model="register.username" placeholder="Choose a username" />
           </div>
 
           <div class="field">
@@ -41,7 +41,7 @@
             <input
               v-model="register.password"
               type="password"
-              placeholder="Password"
+              placeholder="Choose a password"
             />
           </div>
 
