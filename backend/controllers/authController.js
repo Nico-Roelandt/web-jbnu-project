@@ -34,7 +34,7 @@ exports.login = (req, res) => {
       { expiresIn: JWT_EXPIRES }
     );
 
-    res.json({ message: "Login successful", token, user: { id: user.id, username: user.username } });
+    res.json({ message: "Login successful", token, user: { id: user.id, username: user.username, is_admin: user.is_admin } });
   });
 };
 

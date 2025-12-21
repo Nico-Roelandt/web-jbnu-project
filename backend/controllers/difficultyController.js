@@ -1,7 +1,12 @@
 const pool = require("../db");
 
-exports.getAllDifficulties = (req, res) =>
-{
-    // Logic to get all difficulties
-    res.send("Get all difficulties");
-}
+/**
+ * Get all difficulties
+ */
+exports.getAllDifficulties = (req, res) => {
+  const sql = "SELECT * FROM difficulty";
+  pool.query(sql, (err, results) => {
+    if (err) return res.status(500).json({ message: err.message });
+    res.json(results);
+  });
+};

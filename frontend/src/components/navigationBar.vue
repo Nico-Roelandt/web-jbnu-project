@@ -14,16 +14,23 @@
 </template>
 
 <script setup>
-import { ref, computed } from "vue";
+import { ref, computed, watchEffect } from "vue";
 import { useRouter } from "vue-router";
 import { userToken, logout } from "@/utils/auth";
 
 const router = useRouter();
 const isLoggedIn = computed(() => !!userToken.value);
-const user = ref(JSON.parse(localStorage.getItem("user")));
+
+const user = ref(JSON.parse(localStorage.getItem("user") || "null"));
+
+window.addEventListener("user-changed", () => {
+  user.value = JSON.parse(localStorage.getItem("user") || "null");
+});
 
 function handleLogout() {
   logout();
+  user.value = null;
   router.push("/login");
 }
 </script>
+

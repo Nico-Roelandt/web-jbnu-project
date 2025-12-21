@@ -93,6 +93,7 @@ const handleLogin = async () => {
 
     loginStore(res.data.token);
     localStorage.setItem("user", JSON.stringify(res.data.user));
+    window.dispatchEvent(new Event("user-changed"));
 
     router.push("/user");
   } catch (err) {
@@ -130,6 +131,7 @@ const loginWithGoogle = async () => {
     const token = await user.getIdToken();
 
     loginStore(token);
+    localStorage.setItem("user", JSON.stringify(res.data.user));
 
     const res = await api.post("/users/google-login", {
       googleId: user.uid,

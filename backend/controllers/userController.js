@@ -22,18 +22,33 @@ exports.getUser = (req, res) => {
  * Get all users with pagination & search
  */
 exports.getUsers = (req, res) => {
-    let { page = 1, size = 10, keyword = '' } = req.query;
-    page = parseInt(page); size = parseInt(size);
+    let { page = 1, size = 15, keyword = '' } = req.query; // 15 items per page
+    page = parseInt(page);
+    size = parseInt(size);
     const offset = (page - 1) * size;
 
-    const sql = `
-        SELECT * FROM user 
-        WHERE username LIKE ? 
-        LIMIT ? OFFSET ?
-    `;
-    pool.query(sql, [`%${keyword}%`, size, offset], (err, results) => {
+    const countSql = `SELECT COUNT(*) AS total FROM user WHERE username LIKE ?`;
+    pool.query(countSql, [`%${keyword}%`], (err, countResult) => {
         if (err) return res.status(500).json({ error: err });
-        res.json(results);
+        const total = countResult[0].total;
+        const totalPages = Math.ceil(total / size);
+
+        const sql = `
+            SELECT * FROM user 
+            WHERE username LIKE ? 
+            ORDER BY id ASC
+            LIMIT ? OFFSET ?
+        `;
+        pool.query(sql, [`%${keyword}%`, size, offset], (err, results) => {
+            if (err) return res.status(500).json({ error: err });
+            res.json({
+                page,
+                size,
+                total,
+                totalPages,
+                users: results
+            });
+        });
     });
 };
 
@@ -164,7 +179,7 @@ exports.googleLogin = (req, res) => {
 
       res.status(201).json({
         message: "User created",
-        user: { id: result.insertId, username }
+        user: { id: result.insertId, username, is_admin: 0 }
       });
     });
   });
