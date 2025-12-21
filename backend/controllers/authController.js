@@ -9,43 +9,47 @@ const JWT_EXPIRES = '1h';
  * Login user
 */
 exports.login = (req, res) => {
-    const { username, password } = req.body;
+  const { username, password } = req.body;
 
-    pool.query("SELECT * FROM user WHERE username=?", [username], (err, results) => {
-        if (err) return res.status(500).json({ message: err.message });
-        if (results.length === 0) return res.status(404).json({ message: 'User not found' });
+  if (!username || !password) {
+    return res.status(400).json({ message: "Missing username or password" });
+  }
 
-        const user = results[0];
-        if (!bcrypt.compareSync(password, user.password)) {
-            return res.status(401).json({ message: 'Invalid credentials' });
-        }
+  const sql = "SELECT * FROM user WHERE username = ?";
+  pool.query(sql, [username], async (err, results) => {
+    if (err) return res.status(500).json({ message: err.message });
 
-        const payload = { id: user.id, isAdmin: !!user.is_admin };
-        const token = jwt.sign(payload, JWT_SECRET, { expiresIn: JWT_EXPIRES });
+    if (results.length === 0) {
+      return res.status(401).json({ message: "Invalid credentials" });
+    }
 
-        res.json({ token });
-    });
-};
+    const user = results[0];
+    const match = await bcrypt.compare(password, user.password);
 
-/** 
- * Logout user
-*/
-exports.logout = (req, res) => {
-    res.json({ message: 'Logged out successfully' });
+    if (!match) return res.status(401).json({ message: "Invalid credentials" });
+
+    const token = jwt.sign(
+      { id: user.id, username: user.username, isAdmin: user.is_admin },
+      JWT_SECRET,
+      { expiresIn: JWT_EXPIRES }
+    );
+
+    res.json({ message: "Login successful", token, user: { id: user.id, username: user.username } });
+  });
 };
 
 /**
  * Refresh token
  */
 exports.refresh = (req, res) => {
-    const { token } = req.body;
-    if (!token) return res.status(401).json({ message: 'No token provided' });
+  const { token } = req.body;
+  if (!token) return res.status(401).json({ message: 'No token provided' });
 
-    try {
-        const decoded = jwt.verify(token, JWT_SECRET);
-        const newToken = jwt.sign({ id: decoded.id, isAdmin: decoded.isAdmin }, JWT_SECRET, { expiresIn: JWT_EXPIRES });
-        res.json({ token: newToken });
-    } catch (err) {
-        return res.status(401).json({ message: 'Invalid token' });
-    }
+  try {
+    const decoded = jwt.verify(token, JWT_SECRET);
+    const newToken = jwt.sign({ id: decoded.id, isAdmin: decoded.isAdmin }, JWT_SECRET, { expiresIn: JWT_EXPIRES });
+    res.json({ token: newToken });
+  } catch (err) {
+    return res.status(401).json({ message: 'Invalid token' });
+  }
 };

@@ -1,13 +1,14 @@
 import axios from "axios";
+import api from "@/services/api";
 
 const API_URL = "http://localhost:3000";
 
 /**
- * Get one user by id
+ * Get user by id
  */
 export const getUserById = async (userId) => {
-  const response = await axios.get(`${API_URL}/users/${userId}`);
-  return response.data[0]; 
+  const res = await api.get(`/users/${userId}`);
+  return res.data[0];
 };
 
 /**
@@ -40,8 +41,6 @@ export const updateUserStats = async (userId, win, attempts) => {
  * Get user rankings (victories, attempts, games)
  */
 export const getUserRankings = async (userId) => {
-  const response = await axios.get(
-    `${API_URL}/users/${userId}/rankings`
-  );
-  return response.data;
+  const res = await api.get(`/users/${userId}/rankings`);
+  return res.data;
 };

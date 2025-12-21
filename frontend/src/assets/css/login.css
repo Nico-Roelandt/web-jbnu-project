@@ -62,8 +62,9 @@
 }
 
 .btn.primary {
-  background: #ffd400;
+  background: #ffd43b;
   color: #1b1b1b;
+  box-shadow: 0 6px 0 #d4b100;
 }
 
 .btn.secondary {
@@ -74,4 +75,9 @@
 .btn:hover {
   transform: translateY(-2px);
   box-shadow: 0 10px 20px rgba(0, 0, 0, 0.4);
+}
+
+.login-message {
+  margin-top: 25px;
+  font-size: 14px;
 }

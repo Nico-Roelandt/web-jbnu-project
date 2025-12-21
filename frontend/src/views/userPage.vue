@@ -42,7 +42,7 @@
         <div class="profile-section">
           <h3>Rankings</h3>
 
-          <ul class="ranking-list">
+          <ul class="ranking-list" v-if="rankings">
             <li>
               <span>Victories</span>
               <strong>#{{ rankings.victories }}</strong>
@@ -56,19 +56,19 @@
               <strong>#{{ rankings.games }}</strong>
             </li>
           </ul>
+
+          <div v-else class="loading-container">
+            <p class="loading-text">Loading rankings...</p>
+          </div>
         </div>
       </div>
     </div>
 
-    <!-- Loader -->
     <div v-else class="loading-container">
       <p class="loading-text">Loading profile...</p>
     </div>
-
   </div>
 </template>
-
-
 
 <script setup>
 import { ref, onMounted } from "vue";
@@ -79,7 +79,10 @@ const rankings = ref(null);
 
 onMounted(async () => {
   try {
-    const userId = 5;
+    const userData = JSON.parse(localStorage.getItem("user"));
+    const userId = userData?.id;
+
+    if (!userId) throw new Error("User not logged in");
 
     user.value = await getUserById(userId);
     rankings.value = await getUserRankings(userId);
@@ -89,4 +92,3 @@ onMounted(async () => {
   }
 });
 </script>
-

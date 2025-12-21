@@ -22,9 +22,9 @@
     <div v-else>
       <!-- TOP 3 -->
       <div v-if="activeTab === 'Top 3'">
-        <RankingBlock title="Victories" :players="victoriesTop3" />
-        <RankingBlock title="Average number of attempts" :players="attemptsTop3" />
-        <RankingBlock title="Games played" :players="gamesTop3" />
+        <RankingBlock title="Victories" :players="victoriesTop3" :currentUserId="currentUserIdForHighlight" />
+        <RankingBlock title="Average number of attempts" :players="attemptsTop3" :currentUserId="currentUserIdForHighlight" />
+        <RankingBlock title="Games played" :players="gamesTop3" :currentUserId="currentUserIdForHighlight" />
       </div>
 
       <!-- FULL RANKINGS -->
@@ -32,34 +32,29 @@
         v-else-if="activeTab === 'Victories'"
         title="Victories"
         :players="victories"
-        :currentUserId="currentUserId"
+        :currentUserId="currentUserIdForHighlight"
       />
 
       <RankingBlock
         v-else-if="activeTab === 'Average number of attempts'"
         title="Average number of attempts"
         :players="attempts"
-        :currentUserId="currentUserId"
+        :currentUserId="currentUserIdForHighlight"
       />
 
       <RankingBlock
         v-else-if="activeTab === 'Games played'"
         title="Games played"
         :players="games"
-        :currentUserId="currentUserId"
+        :currentUserId="currentUserIdForHighlight"
       />
-
     </div>
   </div>
 </template>
 
 <script setup>
-import { ref, onMounted } from "vue";
+import { ref, onMounted, computed } from "vue";
 import RankingBlock from "@/components/rankingBlock.vue";
-
-
-const currentUserId = 5;
-
 import {
   getVictoriesRanking,
   getVictoriesTop3,
@@ -86,6 +81,12 @@ const games = ref([]);
 const victoriesTop3 = ref([]);
 const attemptsTop3 = ref([]);
 const gamesTop3 = ref([]);
+
+const currentUserIdForHighlight = computed(() => {
+  const user = JSON.parse(localStorage.getItem("user"));
+  const token = localStorage.getItem("token");
+  return token && user?.id ? user.id : null;
+});
 
 onMounted(async () => {
   try {

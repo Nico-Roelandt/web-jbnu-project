@@ -16,7 +16,7 @@ export const playFakeGame = async (userId, modeId) => {
   const word = words[Math.floor(Math.random() * words.length)];
 
   // update user stats in backend
-  await axios.put(`http://localhost:3000/api/users/${userId}/stats`, {
+  await axios.put(`http://localhost:3000/users/${userId}/stats`, {
     win: win.toString(),
     attempts
   });
