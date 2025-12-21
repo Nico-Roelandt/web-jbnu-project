@@ -156,7 +156,7 @@ router.get("/:id", authMiddleware, userController.getUser);
  *       401:
  *         description: Unauthorized
  */
-router.patch("/:id", authMiddleware, userController.updateUserStats);
+router.patch("/stats",authMiddleware,userController.updateUserStats);
 
 /**
  * @swagger

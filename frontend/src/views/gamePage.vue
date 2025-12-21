@@ -17,31 +17,20 @@
     />
 
     <!-- Mode selection -->
-    <div class="mode-selector">
+    <div class="mode-selector" v-if="modes.length">
       <label
+        v-for="mode in modes"
+        :key="mode.id"
         class="mode-button"
-        :class="{ selected: selectedMode === 'mode1' }"
+        :class="{ selected: selectedMode === mode.id }"
       >
         <input
           type="radio"
           name="gameMode"
-          value="mode1"
+          :value="mode.id"
           v-model="selectedMode"
         />
-        Mode 1
-      </label>
-
-      <label
-        class="mode-button"
-        :class="{ selected: selectedMode === 'mode2' }"
-      >
-        <input
-          type="radio"
-          name="gameMode"
-          value="mode2"
-          v-model="selectedMode"
-        />
-        Mode 2
+        {{ mode.mode_label }}
       </label>
     </div>
 
@@ -49,10 +38,9 @@
       Play
     </button>
 
-
     <!-- Result -->
-    <div v-if="result" class="card result-card">
-      <p><strong>Selected mode:</strong> {{ result.mode }}</p>
+    <div v-if="result" class="card result-card" style="margin-top: 2rem;">
+      <p><strong>Selected mode:</strong> {{ result.modeLabel }}</p>
       <p><strong>Random word:</strong> {{ result.word }}</p>
       <p><strong>Attempts:</strong> {{ result.attempts }}</p>
     </div>
@@ -60,19 +48,39 @@
 </template>
 
 <script setup>
+import { ref, onMounted } from "vue";
+import { getModes } from "@/controllers/adminController.js"; 
 import { playFakeGame } from "@/controllers/gameController.js";
 
-import { ref } from "vue";
+const modes = ref([]);
+const selectedMode = ref(null);
+const result = ref(null);
 
-const selectedMode = ref("mode1"); // ✅ mode 1 sélectionné par défaut
+const fetchModes = async () => {
+  try {
+    const res = await getModes();
+    modes.value = res;
 
-const playGame = () => {
-  console.log("Selected mode:", selectedMode.value);
+    if (res.length > 0) {
+      selectedMode.value = res[0].id;
+    }
+  } catch (err) {
+    console.error("Failed to fetch modes:", err);
+  }
 };
 
-</script>
+onMounted(fetchModes);
 
+const playGame = async () => {
+  if (!selectedMode.value) return;
 
+  const modeObj = modes.value.find(m => m.id === selectedMode.value);
 
-<script setup>
+  const fakeResult = await playFakeGame(selectedMode.value);
+
+  result.value = {
+    ...fakeResult,
+    modeLabel: modeObj.mode_label
+  };
+};
 </script>

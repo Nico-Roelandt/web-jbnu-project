@@ -4,24 +4,21 @@ const pool = require("../db");
  * Create a new game
  */
 exports.createGame = (req, res) => {
-  const REQUIRED_FIELDS = ["word_id", "user_id", "difficulty_id", "mode_id"];
+  const REQUIRED_FIELDS = ["word_id", "difficulty_id", "mode_id"];
 
   const missingFields = REQUIRED_FIELDS.filter(
-    field =>
-      req.body[field] === undefined ||
-      req.body[field] === null ||
-      req.body[field] === ""
+    f => !req.body[f]
   );
 
   if (missingFields.length > 0) {
     return res.status(400).json({
-      code: "VALIDATION_ERROR",
       message: "Missing required fields",
       missingFields
     });
   }
 
-  const { word_id, user_id, difficulty_id, mode_id } = req.body;
+  const user_id = req.user.id; 
+  const { word_id, difficulty_id, mode_id } = req.body;
 
   const sql = `
     INSERT INTO game (word_id, user_id, difficulty_id, mode_id)
@@ -32,12 +29,7 @@ exports.createGame = (req, res) => {
     sql,
     [word_id, user_id, difficulty_id, mode_id],
     (err, results) => {
-      if (err) {
-        return res.status(500).json({
-          code: "DATABASE_ERROR",
-          message: err.message
-        });
-      }
+      if (err) return res.status(500).json({ error: err.message });
 
       res.status(201).json({
         message: "Game created",
@@ -46,3 +38,4 @@ exports.createGame = (req, res) => {
     }
   );
 };
+

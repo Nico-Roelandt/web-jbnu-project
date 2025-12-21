@@ -1,6 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const gameController = require('../controllers/gameController');
+const { authMiddleware, adminOnly } = require("../middlewares/auth");
 
 /**
  * @swagger
@@ -109,6 +110,6 @@ const gameController = require('../controllers/gameController');
  *                   example: Internal server error
  */
 
-router.post("/", gameController.createGame);
+router.post("/", authMiddleware, gameController.createGame);
 
 module.exports = router;

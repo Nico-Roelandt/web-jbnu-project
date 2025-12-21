@@ -56,52 +56,50 @@ exports.getUsers = (req, res) => {
  * Update user statistics after a game
  */
 exports.updateUserStats = async (req, res) => {
-    try {
-        const userId = req.params.id;
-        const win = req.body.win === "true";
-        const attempts = parseInt(req.body.attempts);
+  try {
+    const userId = req.user.id; 
+    const win = req.body.win === "true";
+    const attempts = parseInt(req.body.attempts);
 
-        if (!attempts) {
-            return res.status(400).json({ error: "Missing attempts parameter" });
-        }
-
-        // Get user current stats
-        const rows = await pool.promise().query(
-            "SELECT nb_victories, nb_games, avg_attempts FROM user WHERE id = ?",
-            [userId]
-        ).then(([results]) => results);
-
-        if (rows.length === 0) {
-            return res.status(404).json({ error: "User not found" });
-        }
-
-        const user = rows[0];
-
-        // Update calculations
-        const newNbGames = user.nb_games + 1;
-        const newNbVictories = win ? user.nb_victories + 1 : user.nb_victories;
-        const newAvg = ((user.avg_attempts * user.nb_games) + attempts) / newNbGames;
-
-        // Update user stats in the database
-        pool.query(
-            `UPDATE user 
-             SET nb_victories = ?, nb_games = ?, avg_attempts = ? 
-             WHERE id = ?`,
-            [newNbVictories, newNbGames, newAvg, userId]
-        );
-
-        res.json({
-            message: "User stats updated",
-            stats: {
-                nb_victories: newNbVictories,
-                nb_games: newNbGames,
-                avg_attempts: newAvg
-            }
-        });
-
-    } catch (err) {
-        res.status(500).json({ error: err.message });
+    if (!attempts) {
+      return res.status(400).json({ error: "Missing attempts parameter" });
     }
+
+    const [rows] = await pool.promise().query(
+      "SELECT nb_victories, nb_games, avg_attempts FROM user WHERE id = ?",
+      [userId]
+    );
+
+    if (rows.length === 0) {
+      return res.status(404).json({ error: "User not found" });
+    }
+
+    const user = rows[0];
+
+    const newNbGames = user.nb_games + 1;
+    const newNbVictories = win ? user.nb_victories + 1 : user.nb_victories;
+    const newAvg =
+      ((user.avg_attempts * user.nb_games) + attempts) / newNbGames;
+
+    await pool.promise().query(
+      `UPDATE user
+       SET nb_victories = ?, nb_games = ?, avg_attempts = ?
+       WHERE id = ?`,
+      [newNbVictories, newNbGames, newAvg, userId]
+    );
+
+    res.json({
+      message: "User stats updated",
+      stats: {
+        nb_victories: newNbVictories,
+        nb_games: newNbGames,
+        avg_attempts: newAvg
+      }
+    });
+
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
 };
 
 /**

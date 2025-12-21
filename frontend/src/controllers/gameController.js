@@ -1,22 +1,24 @@
 import axios from "axios";
+import api from "@/services/api";
 
 /**
  * Simulate a Wordle game (frontend only)
- * Then update user stats in backend
+ * Then update user stats in backend (via JWT)
  */
-export const playFakeGame = async (userId, modeId) => {
-  // fake random attempts between 2 and 6
+export const playFakeGame = async (modeId) => {
   const attempts = Math.floor(Math.random() * 5) + 2;
-
-  // fake win (always true for demo)
   const win = true;
 
-  // fake word (only for display)
   const words = ["WORDLE", "PUZZLE", "ORANGE", "PLAYER"];
   const word = words[Math.floor(Math.random() * words.length)];
 
-  // update user stats in backend
-  await axios.put(`http://localhost:3000/users/${userId}/stats`, {
+  await api.post("/games", {
+    word_id: 1,
+    difficulty_id: 1, 
+    mode_id: modeId
+  });
+
+  await api.patch("/users/stats", {
     win: win.toString(),
     attempts
   });
@@ -28,3 +30,4 @@ export const playFakeGame = async (userId, modeId) => {
     modeId
   };
 };
+
