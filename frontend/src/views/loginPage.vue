@@ -22,9 +22,14 @@
             />
           </div>
 
-          <button class="btn primary">Login</button>
+          <button class="btn primary" type="submit">Login</button>
         </form>
-        <p v-if="errorMessage" class="login-message" style="color:red">{{ errorMessage }}</p>
+
+        <button class="btn secondary" style="margin-top: 2rem;" type="button" @click="loginWithGoogle">
+          Login with Google
+        </button>
+
+        <p v-if="loginError" class="login-message" style="color:red">{{ loginError }}</p>
       </div>
 
       <!-- REGISTER CARD -->
@@ -46,8 +51,10 @@
             />
           </div>
 
-          <button class="btn secondary">Create account</button>
+          <button class="btn secondary" type="submit">Create account</button>
         </form>
+
+        <p v-if="registerError" class="login-message" style="color:red">{{ registerError }}</p>
       </div>
     </div>
   </div>
@@ -58,6 +65,8 @@ import { reactive, ref } from "vue";
 import api from "@/services/api";
 import { useRouter } from "vue-router";
 import { login as loginStore } from "@/utils/auth";
+import { auth, provider } from "@/utils/firebase";
+import { signInWithPopup } from "firebase/auth";
 
 const router = useRouter();
 
@@ -71,9 +80,11 @@ const registerForm = reactive({
   password: ""
 });
 
-const errorMessage = ref("");
+const loginError = ref("");
+const registerError = ref("");
 
 const handleLogin = async () => {
+  loginError.value = "";
   try {
     const res = await api.post("/login", {
       username: loginForm.username,
@@ -83,27 +94,57 @@ const handleLogin = async () => {
     loginStore(res.data.token);
     localStorage.setItem("user", JSON.stringify(res.data.user));
 
-    router.push("/user"); 
+    router.push("/user");
   } catch (err) {
-    errorMessage.value = err.response?.data?.message || "Invalid credentials";
+    loginError.value = err.response?.data?.message || "Invalid credentials";
   }
 };
 
 const handleRegister = async () => {
+  registerError.value = "";
   try {
-    const res = await api.post("/users", {
+    if (registerForm.password.length < 5) {
+      registerError.value = "Password must be at least 5 characters";
+      return;
+    }
+
+    await api.post("/users", {
       username: registerForm.username,
       password: registerForm.password,
       is_admin: 0
     });
+
     alert("User created! You can now log in.");
     registerForm.username = "";
     registerForm.password = "";
   } catch (err) {
-    alert(err.response?.data?.message || "Registration failed");
+    registerError.value = err.response?.data?.message || "Registration failed";
   }
 };
-</script>
 
+const loginWithGoogle = async () => {
+  loginError.value = "";
+  try {
+    const result = await signInWithPopup(auth, provider);
+    const user = result.user;
+    const token = await user.getIdToken();
+
+    loginStore(token);
+
+    const res = await api.post("/users/google-login", {
+      googleId: user.uid,
+      username: user.displayName
+    });
+
+    const userData = res.data.user;
+    localStorage.setItem("user", JSON.stringify(userData));
+
+    router.push("/user");
+  } catch (err) {
+    loginError.value = err.message;
+  }
+};
+
+</script>
 
 <style scoped src="@/assets/css/login.css"></style>

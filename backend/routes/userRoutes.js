@@ -6,6 +6,7 @@ router.get("/:id", userController.getUser);
 router.get("/", userController.getUsers);
 router.patch("/:id", userController.updateUserStats);
 router.post("/", userController.createUser);
+router.post("/google-login", userController.googleLogin);
 router.delete("/:id", userController.deleteUser);
 router.get("/:id/rankings", userController.getUserRankings);
 

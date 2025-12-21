@@ -111,6 +111,14 @@ exports.createUser = (req, res) => {
   }
 
   const { is_admin, username, password } = req.body;
+
+  if (password.length < 5) {
+    return res.status(400).json({
+      code: "VALIDATION_ERROR",
+      message: "Password must be at least 5 characters long"
+    });
+  }
+
   const hashedPassword = bcrypt.hashSync(password, 10);
 
   const sql = `
@@ -129,6 +137,35 @@ exports.createUser = (req, res) => {
     res.status(201).json({
       message: "User created",
       id: results.insertId
+    });
+  });
+};
+
+/**
+ * Google login 
+ */
+exports.googleLogin = (req, res) => {
+  const { googleId, username } = req.body;
+
+  const sql = "SELECT * FROM user WHERE google_id = ?";
+  pool.query(sql, [googleId], (err, results) => {
+    if (err) return res.status(500).json({ message: err.message });
+
+    if (results.length > 0) {
+      return res.json({ message: "User exists", user: results[0] });
+    }
+
+    const sqlInsert = `
+      INSERT INTO user (username, google_id, is_admin, password)
+      VALUES (?, ?, 0, '')
+    `;
+    pool.query(sqlInsert, [username, googleId], (err, result) => {
+      if (err) return res.status(500).json({ message: err.message });
+
+      res.status(201).json({
+        message: "User created",
+        user: { id: result.insertId, username }
+      });
     });
   });
 };
