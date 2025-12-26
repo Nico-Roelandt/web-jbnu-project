@@ -32,19 +32,21 @@ const wordController = require('../controllers/wordController');
  * /words:
  *   get:
  *     summary: Get all words
- *     description: Retrieve all words with pagination and keyword search
+ *     description: Retrieve all words with pagination and optional keyword search
  *     tags: [Words]
  *     parameters:
  *       - in: query
  *         name: page
  *         schema:
  *           type: integer
+ *           minimum: 1
  *           default: 1
  *         description: Page number
  *       - in: query
  *         name: size
  *         schema:
  *           type: integer
+ *           minimum: 1
  *           default: 15
  *         description: Number of items per page
  *       - in: query
@@ -55,7 +57,7 @@ const wordController = require('../controllers/wordController');
  *         description: Filter words by keyword
  *     responses:
  *       200:
- *         description: List of words
+ *         description: Words list retrieved successfully
  *         content:
  *           application/json:
  *             schema:
@@ -67,9 +69,9 @@ const wordController = require('../controllers/wordController');
  *                     $ref: '#/components/schemas/Word'
  *                 totalPages:
  *                   type: integer
- *                   example: 10
+ *                   example: 3
  *       500:
- *         description: Server error
+ *         description: Internal server error
  */
 router.get("/", wordController.getAllWords);
 

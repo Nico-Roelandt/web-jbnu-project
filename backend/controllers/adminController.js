@@ -5,17 +5,18 @@ const pool = require("../db");
 /**
  * Get all users
  */
-exports.getAllUsers = (req, res) => {
+exports.getAllUsers = async (req, res) => {
     const sql = `
         SELECT id, username, nb_victories, nb_games, avg_attempts
         FROM user;
     `;
 
-    pool.query(sql, (err, results) => {
-        if (err) return res.status(500).json({ error: err });
-
+    try {
+        const [results] = await pool.query(sql);
         res.json(results);
-    });
+    } catch (err) {
+        res.status(500).json({ error: err });
+    }
 };
 
 ////////////////////////////////// WORDS //////////////////////////////////
@@ -23,51 +24,54 @@ exports.getAllUsers = (req, res) => {
 /**
  * Create a new word
  */
-exports.createWord = (req, res) => {
+exports.createWord = async (req, res) => {
     const sql = `
         INSERT INTO word (word, nb_letters) VALUES (?, ?);
     `;
 
-    pool.query(sql, [req.body.word, req.body.word.length], (err, results) => {
-        if (err) return res.status(500).json({ error: err });
-
+    try {
+        const [results] = await pool.query(sql, [req.body.word, req.body.word.length]);
         res.status(201).json({
             message: "Word created",
             id: results.insertId
         });
-    });
+    } catch (err) {
+        res.status(500).json({ error: err });
+    }
 };
 
 /**
  * Update a word
  */
-exports.updateWord = (req, res) => {
+exports.updateWord = async (req, res) => {
     const sql = `
         UPDATE word SET word = ?, nb_letters = ? WHERE id = ?;
     `;
 
-    pool.query(sql, [req.body.word, req.body.word.length, req.params.id], (err, results) => {
-        if (err) return res.status(500).json({ error: err });
-
+    try {
+        await pool.query(sql, [req.body.word, req.body.word.length, req.params.id]);
         res.status(200).json({
             message: "Word updated"
         });
-    });
+    } catch (err) {
+        res.status(500).json({ error: err });
+    }
 };
 
 /**
  * Delete a word
  */
-exports.deleteWord = (req, res) => {
+exports.deleteWord = async (req, res) => {
     const sql = `
         DELETE FROM word WHERE id = ?;
     `;
 
-    pool.query(sql, [req.params.id], (err) => {
-        if (err) return res.status(500).json({ error: err });
-
+    try {
+        await pool.query(sql, [req.params.id]);
         res.status(204).send();
-    });
+    } catch (err) {
+        res.status(500).json({ error: err });
+    }
 };
 
 ////////////////////////////////// GAMES //////////////////////////////////
@@ -75,16 +79,17 @@ exports.deleteWord = (req, res) => {
 /**
  * Delete a game
  */
-exports.deleteGame = (req, res) => {
+exports.deleteGame = async (req, res) => {
     const sql = `
         DELETE FROM game WHERE id = ?;
     `;
 
-    pool.query(sql, [req.params.id], (err) => {
-        if (err) return res.status(500).json({ error: err });
-
+    try {
+        await pool.query(sql, [req.params.id]);
         res.status(204).send();
-    });
+    } catch (err) {
+        res.status(500).json({ error: err });
+    }
 };
 
 ////////////////////////////////// DIFFICULTIES //////////////////////////////////
@@ -92,51 +97,54 @@ exports.deleteGame = (req, res) => {
 /**
  * Create a new difficulty
  */
-exports.createDifficulty = (req, res) => {
+exports.createDifficulty = async (req, res) => {
     const sql = `
         INSERT INTO difficulty (difficulty_label, min_letters, max_letters) VALUES (?, ?, ?);
     `;
 
-    pool.query(sql, [req.body.difficulty_label, req.body.min_letters, req.body.max_letters], (err, results) => {
-        if (err) return res.status(500).json({ error: err });
-
+    try {
+        const [results] = await pool.query(sql, [req.body.difficulty_label, req.body.min_letters, req.body.max_letters]);
         res.status(201).json({
             message: "Difficulty created",
             id: results.insertId
         });
-    });
+    } catch (err) {
+        res.status(500).json({ error: err });
+    }
 };
 
 /**
  * Update a difficulty
  */
-exports.updateDifficulty = (req, res) => {
+exports.updateDifficulty = async (req, res) => {
     const sql = `
         UPDATE difficulty SET difficulty_label = ?, min_letters = ?, max_letters = ? WHERE id = ?;
     `;
 
-    pool.query(sql, [req.body.difficulty_label, req.body.min_letters, req.body.max_letters, req.params.id], (err, results) => {
-        if (err) return res.status(500).json({ error: err });
-
+    try {
+        await pool.query(sql, [req.body.difficulty_label, req.body.min_letters, req.body.max_letters, req.params.id]);
         res.status(200).json({
             message: "Difficulty updated"
         });
-    });
+    } catch (err) {
+        res.status(500).json({ error: err });
+    }
 };
 
 /**
  * Delete a difficulty
  */
-exports.deleteDifficulty = (req, res) => {
+exports.deleteDifficulty = async (req, res) => {
     const sql = `
         DELETE FROM difficulty WHERE id = ?;
     `;
 
-    pool.query(sql, [req.params.id], (err) => {
-        if (err) return res.status(500).json({ error: err });
-
+    try {
+        await pool.query(sql, [req.params.id]);
         res.status(204).send();
-    });
+    } catch (err) {
+        res.status(500).json({ error: err });
+    }
 };
 
 ////////////////////////////////// MODES //////////////////////////////////
@@ -144,49 +152,52 @@ exports.deleteDifficulty = (req, res) => {
 /**
  * Create a new mode
  */
-exports.createMode = (req, res) => {
+exports.createMode = async (req, res) => {
     const sql = `
         INSERT INTO mode (mode_label) VALUES (?);
     `;
 
-    pool.query(sql, [req.body.mode_label], (err, results) => {
-        if (err) return res.status(500).json({ error: err });
-
+    try {
+        const [results] = await pool.query(sql, [req.body.mode_label]);
         res.status(201).json({
             message: "Mode created",
             id: results.insertId
         });
-    });
+    } catch (err) {
+        res.status(500).json({ error: err });
+    }
 };
 
 /**
  * Update a mode
  */
-exports.updateMode = (req, res) => {
+exports.updateMode = async (req, res) => {
     const sql = `
         UPDATE mode SET mode_label = ? WHERE id = ?;
     `;
 
-    pool.query(sql, [req.body.mode_label, req.params.id], (err, results) => {
-        if (err) return res.status(500).json({ error: err });
-
+    try {
+        await pool.query(sql, [req.body.mode_label, req.params.id]);
         res.status(200).json({
             message: "Mode updated"
         });
-    });
+    } catch (err) {
+        res.status(500).json({ error: err });
+    }
 };
 
 /**
  * Delete a mode
  */
-exports.deleteMode = (req, res) => {
+exports.deleteMode = async (req, res) => {
     const sql = `
         DELETE FROM mode WHERE id = ?;
     `;
 
-    pool.query(sql, [req.params.id], (err) => {
-        if (err) return res.status(500).json({ error: err });
-
+    try {
+        await pool.query(sql, [req.params.id]);
         res.status(204).send();
-    });
+    } catch (err) {
+        res.status(500).json({ error: err });
+    }
 };

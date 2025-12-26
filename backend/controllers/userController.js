@@ -1,56 +1,55 @@
 const pool = require("../db");
 const bcrypt = require('bcryptjs');
+const jwt = require("jsonwebtoken")
+const JWT_SECRET = process.env.JWT_SECRET || "dev_secret"
 
 /**
  * Get user by ID
  */
-exports.getUser = (req, res) => {
-    const sql = `
-        SELECT *
-        FROM user
-        where id = ?;
-    `;
-
-    pool.query(sql, [req.params.id], (err, results) => {
-        if (err) return res.status(500).json({ error: err });
-
-        res.json(results);
-    });
-};
+exports.getUser = async (req, res, next) => {
+  try {
+    const [rows] = await pool.query(
+      "SELECT * FROM user WHERE id = ?",
+      [req.params.id]
+    )
+    if (!rows.length) return res.status(404).json({ message: "User not found" })
+    res.json(rows[0])
+  } catch (e) {
+    next(e)
+  }
+}
 
 /**
  * Get all users with pagination & search
  */
-exports.getUsers = (req, res) => {
-    let { page = 1, size = 15, keyword = '' } = req.query; // 15 items per page
-    page = parseInt(page);
-    size = parseInt(size);
-    const offset = (page - 1) * size;
+exports.getUsers = async (req, res) => {
+  try {
+    let { page = 1, size = 15, keyword = '' } = req.query
+    page = Number(page)
+    size = Number(size)
+    const offset = (page - 1) * size
 
-    const countSql = `SELECT COUNT(*) AS total FROM user WHERE username LIKE ?`;
-    pool.query(countSql, [`%${keyword}%`], (err, countResult) => {
-        if (err) return res.status(500).json({ error: err });
-        const total = countResult[0].total;
-        const totalPages = Math.ceil(total / size);
+    const [[{ total }]] = await pool.query(
+      "SELECT COUNT(*) total FROM user WHERE username LIKE ?",
+      [`%${keyword}%`]
+    )
 
-        const sql = `
-            SELECT * FROM user 
-            WHERE username LIKE ? 
-            ORDER BY id ASC
-            LIMIT ? OFFSET ?
-        `;
-        pool.query(sql, [`%${keyword}%`, size, offset], (err, results) => {
-            if (err) return res.status(500).json({ error: err });
-            res.json({
-                page,
-                size,
-                total,
-                totalPages,
-                users: results
-            });
-        });
-    });
-};
+    const [users] = await pool.query(
+      "SELECT * FROM user WHERE username LIKE ? ORDER BY id ASC LIMIT ? OFFSET ?",
+      [`%${keyword}%`, size, offset]
+    )
+
+    res.json({
+      page,
+      size,
+      total,
+      totalPages: Math.ceil(total / size),
+      users
+    })
+  } catch (e) {
+    res.status(500).json({ error: e.message })
+  }
+}
 
 /**
  * Update user statistics after a game
@@ -157,89 +156,72 @@ exports.createUser = (req, res) => {
 /**
  * Google login 
  */
-exports.googleLogin = (req, res) => {
-  const { googleId, username } = req.body;
-
-  const sql = "SELECT * FROM user WHERE google_id = ?";
-  pool.query(sql, [googleId], (err, results) => {
-    if (err) return res.status(500).json({ message: err.message });
-
-    if (results.length > 0) {
-      return res.json({ message: "User exists", user: results[0] });
+exports.googleLogin = async (req, res, next) => {
+  try {
+    const { googleId, username } = req.body
+    if (!googleId || !username) {
+      return res.status(400).json({ message: "Invalid data" })
     }
 
-    const sqlInsert = `
-      INSERT INTO user (username, google_id, is_admin, password)
-      VALUES (?, ?, 0, '')
-    `;
-    pool.query(sqlInsert, [username, googleId], (err, result) => {
-      if (err) return res.status(500).json({ message: err.message });
+    const [rows] = await pool.query(
+      "SELECT * FROM user WHERE google_id = ?",
+      [googleId]
+    )
 
-      res.status(201).json({
-        message: "User created",
-        user: { id: result.insertId, username, is_admin: 0 }
-      });
-    });
-  });
-};
+    let user = rows[0]
+
+    if (!user) {
+      const [r] = await pool.query(
+        "INSERT INTO user (username, google_id, is_admin, password) VALUES (?, ?, 0, '')",
+        [username, googleId]
+      )
+      user = { id: r.insertId, username, is_admin: 0 }
+    }
+
+    const token = jwt.sign(
+      { id: user.id, is_admin: user.is_admin },
+      JWT_SECRET,
+      { expiresIn: "7d" }
+    )
+
+    res.json({ token, user })
+  } catch (e) {
+    next(e)
+  }
+}
 
 /**
  * Delete user
  */
-exports.deleteUser = (req, res) => {
-    const sql = `
-        DELETE FROM user WHERE id = ?;
-    `;
-
-    pool.query(sql, [req.params.id], (err) => {
-        if (err) return res.status(500).json({ error: err });
-
-        res.status(204).send();
-    });
-};
+exports.deleteUser = async (req, res, next) => {
+  try {
+    await pool.query("DELETE FROM user WHERE id = ?", [req.params.id])
+    res.sendStatus(204)
+  } catch (e) {
+    next(e)
+  }
+}
 
 /**
  * Get user rankings (victories, attempts, games)
  */
-exports.getUserRankings = (req, res) => {
-    const userId = Number(req.params.id);
+exports.getUserRankings = async (req, res, next) => {
+  try {
+    const userId = +req.params.id
 
-    const victoriesSql = `
-        SELECT id
-        FROM user
-        ORDER BY nb_victories DESC
-    `;
+    const [v] = await pool.query("SELECT id FROM user ORDER BY nb_victories DESC")
+    const [a] = await pool.query("SELECT id FROM user ORDER BY avg_attempts ASC")
+    const [g] = await pool.query("SELECT id FROM user ORDER BY nb_games DESC")
 
-    const attemptsSql = `
-        SELECT id
-        FROM user
-        ORDER BY avg_attempts ASC
-    `;
+    const r = l => l.findIndex(u => u.id === userId) + 1
 
-    const gamesSql = `
-        SELECT id
-        FROM user
-        ORDER BY nb_games DESC
-    `;
+    res.json({
+      victories: r(v),
+      attempts: r(a),
+      games: r(g)
+    })
+  } catch (e) {
+    next(e)
+  }
+}
 
-    pool.query(victoriesSql, (err, victories) => {
-        if (err) return res.status(500).json({ error: err });
-
-        pool.query(attemptsSql, (err, attempts) => {
-            if (err) return res.status(500).json({ error: err });
-
-            pool.query(gamesSql, (err, games) => {
-                if (err) return res.status(500).json({ error: err });
-
-                const getRank = (list) =>
-                    list.findIndex(u => u.id === userId) + 1;
-
-                res.json({
-                    victories: getRank(victories),
-                    attempts: getRank(attempts),
-                    games: getRank(games)
-                });
-            });
-        });
-    });
-};

@@ -6,10 +6,10 @@ const API_URL = "http://localhost:3000";
 /**
  * Get user by id
  */
-export const getUserById = async (userId) => {
-  const res = await api.get(`/users/${userId}`);
-  return res.data[0];
-};
+export const getUserById = async (id) => {
+  const res = await api.get(`/users/${id}`)
+  return res.data
+}
 
 /**
  * Get all users (used later for ranking)

@@ -2,6 +2,9 @@ const pool = require("../db")
 
 let currentTargetByGameId = new Map()
 
+/**
+ * Start a new game
+ */
 exports.startGame = async (req, res) => {
   try {
     const [rows] = await pool.query(
@@ -34,7 +37,9 @@ exports.startGame = async (req, res) => {
 }
 
 
-
+/**
+ * Make a guess in a game
+ */
 exports.guess = async (req, res) => {
   try {
     const gameId = String(req.params.id)

@@ -1,0 +1,294 @@
+{
+  "info": {
+    "_postman_id": "b3e94a47-ecdf-4c0b-a111-wordlefull",
+    "name": "Wordle API",
+    "description": "Postman collection for Wordle API",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+
+    {
+      "name": "Auth",
+      "item": [
+        {
+          "name": "POST Login",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{ \"username\": \"admin\", \"password\": \"admin123\" }"
+            },
+            "url": "http://localhost:3000/auth/login"
+          }
+        },
+        {
+          "name": "POST Refresh Token",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{ \"token\": \"PASTE_VALID_TOKEN_HERE\" }"
+            },
+            "url": "http://localhost:3000/auth/refresh"
+          }
+        }
+      ]
+    },
+
+    {
+      "name": "Users",
+      "item": [
+        {
+          "name": "GET Users (admin)",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer VALID_ADMIN_TOKEN" }],
+            "url": "http://localhost:3000/users?page=1&size=10&keyword=a"
+          }
+        },
+        {
+          "name": "GET User by ID",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer VALID_TOKEN" }],
+            "url": "http://localhost:3000/users/1"
+          }
+        },
+        {
+          "name": "POST Create User",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer VALID_ADMIN_TOKEN" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{ \"username\": \"player1\", \"password\": \"secret1\", \"is_admin\": 0 }"
+            },
+            "url": "http://localhost:3000/users"
+          }
+        },
+        {
+          "name": "PATCH User Stats",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              { "key": "Authorization", "value": "Bearer VALID_TOKEN" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{ \"win\": true, \"attempts\": 4 }"
+            },
+            "url": "http://localhost:3000/users/stats"
+          }
+        },
+        {
+          "name": "DELETE User",
+          "request": {
+            "method": "DELETE",
+            "header": [{ "key": "Authorization", "value": "Bearer VALID_ADMIN_TOKEN" }],
+            "url": "http://localhost:3000/users/3"
+          }
+        },
+        {
+          "name": "POST Google Login",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{ \"googleId\": \"google_abc123\", \"username\": \"google_user\" }"
+            },
+            "url": "http://localhost:3000/users/google-login"
+          }
+        },
+        {
+          "name": "GET User Rankings",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer VALID_TOKEN" }],
+            "url": "http://localhost:3000/users/1/rankings"
+          }
+        }
+      ]
+    },
+
+    {
+      "name": "Games",
+      "item": [
+        {
+          "name": "GET Start Game",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer VALID_TOKEN" }],
+            "url": "http://localhost:3000/games/start"
+          }
+        },
+        {
+          "name": "POST Guess Word",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer VALID_TOKEN" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{ \"guess\": \"apple\" }"
+            },
+            "url": "http://localhost:3000/games/1/guess"
+          }
+        },
+        {
+          "name": "GET Games",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer VALID_ADMIN_TOKEN" }],
+            "url": "http://localhost:3000/games"
+          }
+        },
+        {
+          "name": "DELETE Game (admin)",
+          "request": {
+            "method": "DELETE",
+            "header": [{ "key": "Authorization", "value": "Bearer VALID_ADMIN_TOKEN" }],
+            "url": "http://localhost:3000/admin/games/1"
+          }
+        }
+      ]
+    },
+
+    {
+      "name": "Modes",
+      "item": [
+        { "name": "GET Modes", "request": { "method": "GET", "url": "http://localhost:3000/modes" } },
+        {
+          "name": "POST Mode",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer VALID_ADMIN_TOKEN" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": { "mode": "raw", "raw": "{ \"mode_label\": \"Classic\" }" },
+            "url": "http://localhost:3000/admin/modes"
+          }
+        },
+        {
+          "name": "PUT Mode",
+          "request": {
+            "method": "PUT",
+            "header": [{ "key": "Authorization", "value": "Bearer VALID_ADMIN_TOKEN" }],
+            "url": "http://localhost:3000/admin/modes/1"
+          }
+        },
+        {
+          "name": "DELETE Mode",
+          "request": {
+            "method": "DELETE",
+            "header": [{ "key": "Authorization", "value": "Bearer VALID_ADMIN_TOKEN" }],
+            "url": "http://localhost:3000/admin/modes/1"
+          }
+        }
+      ]
+    },
+
+    {
+      "name": "Difficulties",
+      "item": [
+        { "name": "GET Difficulties", "request": { "method": "GET", "url": "http://localhost:3000/difficulties" } },
+        {
+          "name": "POST Difficulty",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer VALID_ADMIN_TOKEN" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{ \"difficulty_label\": \"Hard\", \"min_letters\": 5, \"max_letters\": 7 }"
+            },
+            "url": "http://localhost:3000/admin/difficulties"
+          }
+        },
+        {
+          "name": "PUT Difficulty",
+          "request": {
+            "method": "PUT",
+            "header": [{ "key": "Authorization", "value": "Bearer VALID_ADMIN_TOKEN" }],
+            "url": "http://localhost:3000/admin/difficulties/1"
+          }
+        },
+        {
+          "name": "DELETE Difficulty",
+          "request": {
+            "method": "DELETE",
+            "header": [{ "key": "Authorization", "value": "Bearer VALID_ADMIN_TOKEN" }],
+            "url": "http://localhost:3000/admin/difficulties/1"
+          }
+        }
+      ]
+    },
+
+    {
+      "name": "Rankings",
+      "item": [
+        { "name": "Victories", "request": { "method": "GET", "url": "http://localhost:3000/rankings/victories" } },
+        { "name": "Victories Top 3", "request": { "method": "GET", "url": "http://localhost:3000/rankings/victories/top3" } },
+        { "name": "Attempts", "request": { "method": "GET", "url": "http://localhost:3000/rankings/attempts" } },
+        { "name": "Attempts Top 3", "request": { "method": "GET", "url": "http://localhost:3000/rankings/attempts/top3" } },
+        { "name": "Games", "request": { "method": "GET", "url": "http://localhost:3000/rankings/games" } },
+        { "name": "Games Top 3", "request": { "method": "GET", "url": "http://localhost:3000/rankings/games/top3" } }
+      ]
+    },
+
+    {
+      "name": "Words",
+      "item": [
+        {
+          "name": "GET Words",
+          "request": {
+            "method": "GET",
+            "url": "http://localhost:3000/words?page=1&size=10&keyword=ap"
+          }
+        },
+        {
+          "name": "POST Word",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer VALID_ADMIN_TOKEN" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{ \"word\": \"apple\", \"nb_letters\": 5 }"
+            },
+            "url": "http://localhost:3000/admin/words"
+          }
+        },
+        {
+          "name": "PUT Word",
+          "request": {
+            "method": "PUT",
+            "header": [{ "key": "Authorization", "value": "Bearer VALID_ADMIN_TOKEN" }],
+            "url": "http://localhost:3000/admin/words/1"
+          }
+        },
+        {
+          "name": "DELETE Word",
+          "request": {
+            "method": "DELETE",
+            "header": [{ "key": "Authorization", "value": "Bearer VALID_ADMIN_TOKEN" }],
+            "url": "http://localhost:3000/admin/words/1"
+          }
+        }
+      ]
+    }
+  ]
+}

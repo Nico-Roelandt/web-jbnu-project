@@ -1,5 +1,8 @@
 const db = require('../db')
 
+/**
+ * Get all words with pagination & search
+ */
 exports.getAllWords = async (req, res, next) => {
   try {
     const page = Math.max(parseInt(req.query.page || '1', 10), 1)
