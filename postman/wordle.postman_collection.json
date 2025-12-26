@@ -11,6 +11,18 @@
       "name": "Auth",
       "item": [
         {
+          "name": "POST Register",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{ \"username\": \"newplayer\", \"password\": \"secret123\" }"
+            },
+            "url": "http://localhost:3000/auth/register"
+          }
+        },
+        {
           "name": "POST Login",
           "request": {
             "method": "POST",
@@ -136,10 +148,7 @@
               { "key": "Authorization", "value": "Bearer VALID_TOKEN" },
               { "key": "Content-Type", "value": "application/json" }
             ],
-            "body": {
-              "mode": "raw",
-              "raw": "{ \"guess\": \"apple\" }"
-            },
+            "body": { "mode": "raw", "raw": "{ \"guess\": \"apple\" }" },
             "url": "http://localhost:3000/games/1/guess"
           }
         },
@@ -265,10 +274,7 @@
               { "key": "Authorization", "value": "Bearer VALID_ADMIN_TOKEN" },
               { "key": "Content-Type", "value": "application/json" }
             ],
-            "body": {
-              "mode": "raw",
-              "raw": "{ \"word\": \"apple\", \"nb_letters\": 5 }"
-            },
+            "body": { "mode": "raw", "raw": "{ \"word\": \"apple\", \"nb_letters\": 5 }" },
             "url": "http://localhost:3000/admin/words"
           }
         },
