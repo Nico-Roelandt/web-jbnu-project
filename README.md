@@ -82,18 +82,12 @@ The frontend will connect to the backend using the URL defined in `PUBLIC_BASE_U
 
 ---
 
-## Known Issues
+## Example on Jcloud
 
-### Port Configuration
 
-> **⚠️ Known Issue:** Some parts of the backend assume the server is running on port 3000 instead of relying consistently on `process.env.PORT`.
+http://113.198.66.75:13032 for api
+http://113.198.66.75:10032 for frontend
 
-**Impact:**
-- Changing the `PORT` value in `.env` may cause unexpected behavior
-- The application may not work correctly if deployed on a different port
-
-**Current Workaround:**
-Always run the backend on port 3000 and ensure this port is opened on the VM firewall and cloud provider settings.
 
 ---
 
